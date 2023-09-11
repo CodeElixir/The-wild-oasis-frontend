@@ -7,7 +7,7 @@ function SidebarContent() {
     <div className="flex grow flex-col gap-y-8 border-r border-gray-200 px-6 py-7 dark:border-gray-800">
       <Logo />
       <MainNav />
-      <Uploader />
+      {process.env.NODE_ENV === "development" && <Uploader />}
     </div>
   );
 }
