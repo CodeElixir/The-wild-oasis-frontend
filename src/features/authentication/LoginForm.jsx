@@ -12,7 +12,7 @@ function LoginForm() {
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: { email: "test@test.com", password: "sandeep123321" },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (data) => {
