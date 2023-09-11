@@ -1,20 +1,18 @@
 import CabinTable from "../features/cabins/CabinTable";
 import AddNewCabin from "../features/cabins/AddNewCabin";
+import CabinTableOperations from "../features/cabins/CabinTableOperations";
 
 function Cabins() {
   return (
-    <div className="grid grid-cols-[repeat(2,_minmax(10rem,_1fr))] content-start items-center gap-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-700">All Cabins</h1>
+    <div className="flex flex-col gap-y-8">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">All Cabins</h1>
+        </div>
+        <CabinTableOperations />
       </div>
-      <div className="justify-self-end">Filter/Sort</div>
-      <div className="col-span-full">
-        <CabinTable />
-      </div>
-
-      <div className="col-span-full">
-        <AddNewCabin />
-      </div>
+      <CabinTable />
+      <AddNewCabin />
     </div>
   );
 }

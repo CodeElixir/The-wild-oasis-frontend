@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { format, isToday } from "date-fns";
 import {
   HiOutlineChatBubbleBottomCenterText,
@@ -6,102 +5,8 @@ import {
   HiOutlineCurrencyDollar,
   HiOutlineHomeModern,
 } from "react-icons/hi2";
+import { formatCurrency, formatDistanceFromNow } from "../../utils/helpers";
 
-import DataItem from "../../ui/DataItem";
-import { Flag } from "../../ui/Flag";
-
-import { formatDistanceFromNow, formatCurrency } from "../../utils/helpers";
-
-const StyledBookingDataBox = styled.section`
-  /* Box */
-  background-color: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-
-  overflow: hidden;
-`;
-
-const Header = styled.header`
-  background-color: var(--color-brand-500);
-  padding: 2rem 4rem;
-  color: #e0e7ff;
-  font-size: 1.8rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  svg {
-    height: 3.2rem;
-    width: 3.2rem;
-  }
-
-  & div:first-child {
-    display: flex;
-    align-items: center;
-    gap: 1.6rem;
-    font-weight: 600;
-    font-size: 1.8rem;
-  }
-
-  & span {
-    font-family: "Sono";
-    font-size: 2rem;
-    margin-left: 4px;
-  }
-`;
-
-const Section = styled.section`
-  padding: 3.2rem 4rem 1.2rem;
-`;
-
-const Guest = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 1.6rem;
-  color: var(--color-grey-500);
-
-  & p:first-of-type {
-    font-weight: 500;
-    color: var(--color-grey-700);
-  }
-`;
-
-const Price = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.6rem 3.2rem;
-  border-radius: var(--border-radius-sm);
-  margin-top: 2.4rem;
-
-  background-color: ${(props) =>
-    props.isPaid ? "var(--color-green-100)" : "var(--color-yellow-100)"};
-  color: ${(props) =>
-    props.isPaid ? "var(--color-green-700)" : "var(--color-yellow-700)"};
-
-  & p:last-child {
-    text-transform: uppercase;
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
-
-  svg {
-    height: 2.4rem;
-    width: 2.4rem;
-    color: currentColor !important;
-  }
-`;
-
-const Footer = styled.footer`
-  padding: 1.6rem 4rem;
-  font-size: 1.2rem;
-  color: var(--color-grey-500);
-  text-align: right;
-`;
-
-// A purely presentational component
 function BookingDataBox({ booking }) {
   const {
     created_at,
@@ -120,67 +25,123 @@ function BookingDataBox({ booking }) {
   } = booking;
 
   return (
-    <StyledBookingDataBox>
-      <Header>
-        <div>
-          <HiOutlineHomeModern />
-          <p>
-            {numNights} nights in Cabin <span>{cabinName}</span>
-          </p>
+    <section className="w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+      <header className="flex flex-wrap items-center justify-between gap-4 bg-indigo-600 px-10 py-5 text-base font-medium text-indigo-100">
+        <div className="flex items-center gap-4">
+          <HiOutlineHomeModern className="h-8 min-h-[1.5rem] w-8 min-w-[1.5rem]" />
+          <div>
+            <span>{numNights} nights in Cabin</span>
+            <span className="ml-1 font-[Sono] text-lg">{cabinName}</span>
+          </div>
         </div>
-
-        <p>
+        <div>
           {format(new Date(startDate), "EEE, MMM dd yyyy")} (
           {isToday(new Date(startDate))
             ? "Today"
             : formatDistanceFromNow(startDate)}
           ) &mdash; {format(new Date(endDate), "EEE, MMM dd yyyy")}
-        </p>
-      </Header>
+        </div>
+      </header>
 
-      <Section>
-        <Guest>
-          {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`} />}
-          <p>
-            {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ""}
-          </p>
-          <span>&bull;</span>
-          <p>{email}</p>
-          <span>&bull;</span>
-          <p>National ID {nationalID}</p>
-        </Guest>
+      <section className="flex flex-col text-base">
+        <div className="flex flex-wrap items-center gap-3 border-b border-gray-200 px-10 py-5 dark:border-gray-800">
+          <div className="flex items-center gap-3">
+            {countryFlag && (
+              <img
+                className="block max-w-[1.25rem] rounded-sm border border-gray-100 dark:border-gray-50"
+                src={countryFlag}
+                alt={`Flag of ${country}`}
+              />
+            )}
+            <span className="font-medium">
+              {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ""}
+            </span>
+          </div>
+          <span className="text-gray-500 dark:text-gray-400">
+            <span className="mr-3">&bull;</span>
+            {email}
+          </span>
+          <span className="text-gray-500 dark:text-gray-400">
+            <span className="mr-3">&bull;</span>
+            National ID {nationalID}
+          </span>
+        </div>
 
-        {observations && (
-          <DataItem
-            icon={<HiOutlineChatBubbleBottomCenterText />}
-            label="Observations"
+        <div className="flex flex-col flex-wrap gap-4 px-10 py-5">
+          {observations && (
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3">
+                <HiOutlineChatBubbleBottomCenterText className="h-5 w-5 text-indigo-600" />
+                <span className="font-medium">Observations</span>
+              </div>
+              <div className="text-gray-700 dark:text-gray-400">
+                <span>{observations}</span>
+              </div>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3">
+              <HiOutlineCheckCircle className="h-5 w-5 text-indigo-600" />
+              <span className="font-medium">Breakfast included?</span>
+            </div>
+            <div className="text-gray-700 dark:text-gray-400">
+              <span>{hasBreakfast ? "Yes" : "No"}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-10 pb-5">
+          <div
+            className={`flex flex-wrap items-center justify-between gap-3 rounded-md px-8 py-4 ${
+              isPaid ? "bg-green-100" : "bg-yellow-100"
+            }`}
           >
-            {observations}
-          </DataItem>
-        )}
-
-        <DataItem icon={<HiOutlineCheckCircle />} label="Breakfast included?">
-          {hasBreakfast ? "Yes" : "No"}
-        </DataItem>
-
-        <Price isPaid={isPaid}>
-          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
-            {formatCurrency(totalPrice)}
-
-            {hasBreakfast &&
-              ` (${formatCurrency(cabinPrice)} cabin + ${formatCurrency(
-                extrasPrice
-              )} breakfast)`}
-          </DataItem>
-
-          <p>{isPaid ? "Paid" : "Will pay at property"}</p>
-        </Price>
-      </Section>
-
-      <Footer>
-        <p>Booked {format(new Date(created_at), "EEE, MMM dd yyyy, p")}</p>
-      </Footer>
-    </StyledBookingDataBox>
+            <div className="flex gap-2">
+              <HiOutlineCurrencyDollar
+                className={`mt-[2px] min-h-[1.2rem] min-w-[1.2rem] sm:mt-0 sm:h-6 sm:w-6 ${
+                  isPaid ? "text-green-800" : "text-yellow-800"
+                }`}
+              />
+              <div
+                className={`font-semibold ${
+                  isPaid ? "text-green-800" : "text-yellow-800"
+                }`}
+              >
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3">
+                  <span>Total price</span>
+                  <span className="font-medium">
+                    {formatCurrency(totalPrice)}
+                    {hasBreakfast && (
+                      <span>
+                        {` (${formatCurrency(
+                          cabinPrice,
+                        )} cabin + ${formatCurrency(extrasPrice)} breakfast)`}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <span
+                className={`text-sm font-semibold uppercase ${
+                  isPaid ? "text-green-800" : "text-yellow-800"
+                }`}
+              >
+                {isPaid ? "Paid" : "Will pay at property"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <div className="flex flex-wrap items-center justify-end gap-3 px-10 pb-5">
+          <span className="text-right text-xs text-gray-500 dark:text-gray-400">
+            Booked {format(new Date(created_at), "EEE, MMM dd yyyy, p")}
+          </span>
+        </div>
+      </footer>
+    </section>
   );
 }
 

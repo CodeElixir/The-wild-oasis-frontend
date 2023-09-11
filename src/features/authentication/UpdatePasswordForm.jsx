@@ -1,65 +1,87 @@
 import { useForm } from "react-hook-form";
-import Button from "../../ui/Button";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
-import Input from "../../ui/Input";
-
 import { useUpdateUser } from "./useUpdateUser";
+import Input from "../../ui/Input/Input";
+import Button from "../../ui/Button/Button";
+import SpinnerMini from "../../ui/Spinner/SpinnerMini";
 
 function UpdatePasswordForm() {
-  const { register, handleSubmit, formState, getValues, reset } = useForm();
-  const { errors } = formState;
+  const { isUpdating, updateUser } = useUpdateUser();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {},
+  });
 
-  const { updateUser, isUpdating } = useUpdateUser();
-
-  function onSubmit({ password }) {
-    updateUser({ password }, { onSuccess: reset });
-  }
+  const onSubmit = ({ password }) => {
+    updateUser(
+      { password },
+      {
+        onSuccess: () => reset(),
+      },
+    );
+  };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormRow
-        label="Password (min 8 characters)"
-        error={errors?.password?.message}
+    <div className="w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+      <form
+        className="grid grid-cols-1 gap-y-6 overflow-hidden rounded-xl bg-white p-6 text-sm dark:bg-gray-900 dark:bg-opacity-10"
+        onSubmit={handleSubmit(onSubmit)}
       >
         <Input
-          type="password"
           id="password"
+          name="password"
+          label="New Password (min 8 characters)"
+          type="password"
           autoComplete="current-password"
-          disabled={isUpdating}
           {...register("password", {
-            required: "This field is required",
+            required: "This field is required.",
             minLength: {
               value: 8,
               message: "Password needs a minimum of 8 characters",
             },
           })}
+          errors={errors}
+          disabled={isUpdating}
         />
-      </FormRow>
-
-      <FormRow
-        label="Confirm password"
-        error={errors?.passwordConfirm?.message}
-      >
         <Input
+          id="passwordConfirm"
+          name="passwordConfirm"
+          label="Repeat password"
           type="password"
           autoComplete="new-password"
-          id="passwordConfirm"
-          disabled={isUpdating}
           {...register("passwordConfirm", {
-            required: "This field is required",
+            required: "This field is required.",
             validate: (value) =>
-              getValues().password === value || "Passwords need to match",
+              value === getValues().password || "Passwords need to match",
           })}
+          errors={errors}
+          disabled={isUpdating}
         />
-      </FormRow>
-      <FormRow>
-        <Button onClick={reset} type="reset" variation="secondary">
-          Cancel
-        </Button>
-        <Button disabled={isUpdating}>Update password</Button>
-      </FormRow>
-    </Form>
+        <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+          <Button
+            secondary
+            type="button"
+            disabled={isUpdating}
+            onClick={() => {
+              reset();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={isUpdating}
+            disabledStyles="!bg-indigo-500"
+            icon={isUpdating ? <SpinnerMini /> : null}
+          >
+            <span>{isUpdating ? "Updating..." : "Update password"}</span>
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 

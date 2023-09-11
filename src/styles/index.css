@@ -1,13 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body {
-  transition:
-    color 0.3s,
-    background-color 0.3s;
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+#root * {
+  @apply transition-[background-color,_border-color] duration-300;
 }
 
 [type="text"]:focus,
@@ -103,7 +100,7 @@ select {
   flex-shrink: 0;
   height: 1rem;
   width: 1rem;
-  color: #2563eb;
+  color: theme(colors.indigo.600);
   background-color: #fff;
   border-color: #6b7280;
   border-width: 1px;
@@ -125,7 +122,7 @@ select {
   --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
   --tw-ring-offset-width: 2px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: #2563eb;
+  --tw-ring-color: theme(colors.indigo.600);
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
     var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
@@ -147,8 +144,16 @@ select {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
 }
 
+[type="checkbox"]:disabled:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='rgb(107, 114, 128)' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
 [type="radio"]:checked {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+
+[type="radio"]:disabled:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='rgb(107, 114, 128)' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
 }
 
 [type="checkbox"]:checked:hover,
@@ -157,6 +162,14 @@ select {
 [type="radio"]:checked:focus {
   border-color: transparent;
   background-color: currentColor;
+}
+
+[type="checkbox"]:disabled:checked:hover,
+[type="checkbox"]:disabled:checked:focus,
+[type="radio"]:disabled:checked:hover,
+[type="radio"]:disabled:checked:focus {
+  border-color: theme(colors.gray.200);
+  background-color: theme(colors.gray.50);
 }
 
 [type="checkbox"]:indeterminate {
@@ -191,7 +204,11 @@ select {
 .blurring {
   overflow: hidden;
   filter: blur(4px);
-  transition:
+  /* transition:
     300ms filter ease,
-    300ms -webkit-filter ease;
+    300ms -webkit-filter ease; */
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

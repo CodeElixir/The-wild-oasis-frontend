@@ -11,9 +11,9 @@ import {
 import { useCreateCabin } from "./useCreateCabin";
 import { useDeleteCabin } from "./useDeleteCabin";
 import CreateCabinForm from "./CreateCabinForm";
-import ConfirmDeletePopUp from "../../ui/ConfirmDeletePopUp";
-import Modal from "../../ui/Modal";
-import Menu from "../../ui/Menu";
+import ConfirmDeletePopUp from "../../ui/Modal/ConfirmDeletePopUp";
+import Modal from "../../ui/Modal/Modal";
+import Menu from "../../ui/Menu/Menu";
 
 function CabinMenu({ cabin }) {
   const [showModal, setShowModal] = useState(false);
@@ -51,12 +51,14 @@ function CabinMenu({ cabin }) {
           <HiEllipsisVertical />
         </Menu.Button>
         <Menu.Items>
-          <div className="w-40 px-2 py-4 leading-6">
+          <div className="w-48 py-1 leading-6 text-gray-600 dark:text-gray-400">
             <Menu.Item>
               {({ active }) => (
                 <button
                   className={`${
-                    active ? " bg-gray-100 text-indigo-600" : ""
+                    active
+                      ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
+                      : ""
                   } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
                   onClick={() => setShowModal(true)}
                   disabled={isCreating}
@@ -75,7 +77,9 @@ function CabinMenu({ cabin }) {
               {({ active }) => (
                 <button
                   className={`${
-                    active ? " bg-gray-100 text-indigo-600" : ""
+                    active
+                      ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
+                      : ""
                   } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
                   onClick={handleDuplicate}
                 >
@@ -95,11 +99,13 @@ function CabinMenu({ cabin }) {
             <Menu.Item>
               {({ active }) => (
                 <ConfirmDeletePopUp
-                  resourceName={"cabins"}
+                  resourceName={"cabin"}
                   trigger={
                     <button
                       className={`${
-                        active ? " bg-gray-100 text-indigo-600" : ""
+                        active
+                          ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
+                          : ""
                       } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
                     >
                       {active ? (

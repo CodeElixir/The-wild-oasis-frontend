@@ -1,37 +1,101 @@
-import Button from "../../ui/Button";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
-import Input from "../../ui/Input";
-
-// Email regex: /\S+@\S+\.\S+/
+import { useForm } from "react-hook-form";
+import useSignup from "./useSignup";
+import Input from "../../ui/Input/Input";
+import Button from "../../ui/Button/Button";
 
 function SignupForm() {
+  const { signup, isLoading } = useSignup();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {},
+  });
+
+  const onSubmit = ({ fullName, email, password }) => {
+    signup(
+      { fullName: fullName.trim(), email: email.trim(), password },
+      { onSettled: () => reset() },
+    );
+  };
+
   return (
-    <Form>
-      <FormRow label="Full name" error={""}>
-        <Input type="text" id="fullName" />
-      </FormRow>
-
-      <FormRow label="Email address" error={""}>
-        <Input type="email" id="email" />
-      </FormRow>
-
-      <FormRow label="Password (min 8 characters)" error={""}>
-        <Input type="password" id="password" />
-      </FormRow>
-
-      <FormRow label="Repeat password" error={""}>
-        <Input type="password" id="passwordConfirm" />
-      </FormRow>
-
-      <FormRow>
-        {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
-          Cancel
-        </Button>
-        <Button>Create new user</Button>
-      </FormRow>
-    </Form>
+    <div className="w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+      <form
+        className="grid grid-cols-1 gap-y-6 overflow-hidden rounded-xl bg-white p-6 text-sm dark:bg-gray-900 dark:bg-opacity-10"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Input
+          id="fullName"
+          name="fullName"
+          label="Full name"
+          type="text"
+          {...register("fullName", {
+            required: "This field is required.",
+          })}
+          errors={errors}
+          disabled={isLoading}
+        />
+        <Input
+          id="email"
+          name="email"
+          label="Email address"
+          type="email"
+          {...register("email", {
+            required: "This field is required.",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Please provide a valid email address",
+            },
+          })}
+          errors={errors}
+          disabled={isLoading}
+        />
+        <Input
+          id="password"
+          name="password"
+          label="Password (min 8 characters)"
+          type="password"
+          {...register("password", {
+            required: "This field is required.",
+            minLength: {
+              value: 8,
+              message: "Password needs a minimum of 8 characters",
+            },
+          })}
+          errors={errors}
+          disabled={isLoading}
+        />
+        <Input
+          id="passwordConfirm"
+          name="passwordConfirm"
+          label="Repeat password"
+          type="password"
+          {...register("passwordConfirm", {
+            required: "This field is required.",
+            validate: (value) =>
+              value === getValues().password || "Passwords need to match",
+          })}
+          errors={errors}
+          disabled={isLoading}
+        />
+        <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+          <Button
+            secondary
+            type="button"
+            onClick={() => {
+              reset();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button disabled={isLoading}>Create new user</Button>
+        </div>
+      </form>
+    </div>
   );
 }
 

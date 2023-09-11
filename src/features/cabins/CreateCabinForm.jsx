@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import { useCreateCabin } from "./useCreateCabin";
 import { useEditCabin } from "./useEditCabin";
-import Button from "../../ui/Button";
-import FileInput from "../../ui/FileInput";
-import Input from "../../ui/Input";
-import TextArea from "../../ui/TextArea";
+import Button from "../../ui/Button/Button";
+import FileInput from "../../ui/Input/FileInput";
+import Input from "../../ui/Input/Input";
+import TextArea from "../../ui/Input/TextArea";
 
 function CreateCabinForm({ cabinToEdit = {}, onCloseModal = () => {} }) {
   const { id: editCabinId, ...editCabinValues } = cabinToEdit;
@@ -50,7 +50,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal = () => {} }) {
 
   return (
     <form
-      className="grid grid-cols-1 gap-y-6 overflow-hidden rounded-xl bg-white p-4 text-sm"
+      className="grid grid-cols-1 gap-y-6 overflow-hidden rounded-xl bg-white p-4 text-sm dark:bg-gray-900 dark:text-gray-200"
       onSubmit={handleSubmit(onSubmit)}
     >
       <Input

@@ -2,11 +2,15 @@ import UpdateSettingsForm from "../features/settings/UpdateSettingsForm";
 
 function Settings() {
   return (
-    <div className="flex flex-col gap-y-8">
-      <h1 className="text-2xl font-bold text-gray-700">
-        Update hotel settings
-      </h1>
-      <UpdateSettingsForm />
+    <div className="flex w-full max-w-4xl flex-col gap-y-8">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">Update hotel settings</h1>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <UpdateSettingsForm />
+      </div>
     </div>
   );
 }
