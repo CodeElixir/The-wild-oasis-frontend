@@ -7,7 +7,8 @@ import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
 import { useAxios } from "../context/AxiosContext.jsx";
-
+import { deleteCabin } from "../services/apiCabins.js";
+import axios from "axios";
 // const originalSettings = {
 //   minBookingLength: 3,
 //   maxBookingLength: 30,
@@ -58,6 +59,11 @@ async function createGuests(axiosPrivate) {
 async function createCabins(axiosPrivate) {
   try {
     const { data } = await axiosPrivate.post(`/cabins/saveAll`, cabins);
+    if (data && data.length > 0) {
+      for (const cabin of data) {
+        await uploadCabinImage(axiosPrivate, cabin.id, cabin.name);
+      }
+    }
     return data;
   } catch (e) {
     console.log(e.message);
@@ -65,30 +71,28 @@ async function createCabins(axiosPrivate) {
   }
 }
 
+async function uploadCabinImage(axiosPrivate, cabinId, cabinName) {
+  try {
+    const response = await axios.get(`../cabins/cabin-${cabinName}.jpg`, {
+      responseType: "blob",
+    });
+    const formData = new FormData();
+    formData.append("file", response.data);
+    try {
+      await axiosPrivate.post(`/cabins/uploadImage/${cabinId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } catch (e) {
+      // 3. Delete cabin in case image upload fails
+      await deleteCabin(axiosPrivate, cabinId);
+      handleApiError(e);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 async function createBookings(axiosPrivate) {
-  // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own.
-  // So it might be different for different people, especially after multiple uploads.
-  // Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
-
-  // let allCabinIds;
-  // let allGuestIds;
-  //
-  // try {
-  //   const { data } = await axiosPrivate.get(`/cabins/ids`);
-  //   allGuestIds = data;
-  // } catch (e) {
-  //   console.log(e.message);
-  //   handleApiError(e);
-  // }
-  //
-  // try {
-  //   const { data } = await axiosPrivate.get(`/cabins/ids`);
-  //   allCabinIds = data;
-  // } catch (e) {
-  //   console.log(e.message);
-  //   handleApiError(e);
-  // }
-
   const finalBookings = bookings.map((booking) => {
     // Here relying on the order of cabins, as they don't have and ID yet
     const cabin = cabins.at(booking.cabinId - 1);

@@ -1,4 +1,3 @@
-import supabase, { supabaseUrl } from "./supabase";
 import { handleApiError } from "./axios.js";
 
 export async function getCabins(axiosPrivate) {
@@ -10,32 +9,23 @@ export async function getCabins(axiosPrivate) {
   }
 }
 
-export async function createEditCabin(axiosPrivate, { id, cabinData }) {
-  const hasImageUrl =
-    typeof cabinData.image === "string" &&
-    cabinData.image?.startsWith(supabaseUrl);
-
-  let imageName;
-  let imageUrl;
-  if (hasImageUrl) {
-    imageUrl = cabinData.image;
-  } else {
-    imageName = `${Math.random()}-${cabinData.image.name}`.replaceAll("/", "");
-    imageUrl = hasImageUrl
-      ? cabinData.image
-      : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
-  }
+export async function createEditCabin(
+  axiosPrivate,
+  { id, cabinData, imageId },
+) {
+  const hasImageId = typeof cabinData.image === "string";
 
   // 1. Create/Edit cabin
-
   let data;
+  let cabinId = id;
+
   if (id) {
     // Edit
     try {
       const { data: response } = await axiosPrivate.patch(`/cabins/update`, {
         ...cabinData,
         id,
-        image: imageUrl,
+        image: imageId,
       });
       data = response;
     } catch (e) {
@@ -46,27 +36,29 @@ export async function createEditCabin(axiosPrivate, { id, cabinData }) {
     try {
       const { data: response } = await axiosPrivate.post(`/cabins/save`, {
         ...cabinData,
-        image: imageUrl,
+        image: "",
       });
       data = response;
+      cabinId = data.id;
     } catch (e) {
       handleApiError(e);
     }
   }
 
-  if (!hasImageUrl) {
-    // 2. Upload image
-    const { error: storageError } = await supabase.storage
-      .from("cabin-images")
-      .upload(imageName, cabinData.image);
-
-    // 3. Delete cabin in case image upload fails
-    if (storageError) {
-      await deleteCabin(data.id);
-      console.error(storageError);
-      throw new Error(
-        "Cabin image could not be uploaded and the cabin was not created.",
-      );
+  // 2. Upload image
+  if (!hasImageId) {
+    const formData = new FormData();
+    formData.append("file", cabinData.image);
+    try {
+      await axiosPrivate.post(`/cabins/uploadImage/${cabinId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } catch (e) {
+      // 3. Delete cabin in case image upload fails
+      if (!id) {
+        await deleteCabin(axiosPrivate, data.id);
+      }
+      handleApiError(e);
     }
   }
 

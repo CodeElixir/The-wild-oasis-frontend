@@ -1,5 +1,4 @@
 import { handleApiError } from "./axios.js";
-import supabase, { supabaseUrl } from "./supabase.js";
 
 export async function signup(
   axiosPrivate,
@@ -85,27 +84,15 @@ export async function updateCurrentUser(
 
   if (!avatar) return responseData;
 
-  // 2. Upload avatar in avatar bucket
-  const fileName = `avatar-${responseData.user.id}-${Math.random()}`;
-  const { error: storageError } = await supabase.storage
-    .from("avatars")
-    .upload(fileName, avatar);
-
-  if (storageError) {
-    throw new Error(storageError.message);
-  }
-
-  // 3. Update avatar in user
+  const formData = new FormData();
+  formData.append("file", avatar);
   try {
-    if (!id) return null;
-    const { data } = await axiosPrivate.post(`/users/update/${id}`, {
-      avatar: `${supabaseUrl}/storage/v1/object/public/avatars/${fileName}`,
+    await axiosPrivate.post(`/users/uploadAvatar/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    responseData = data;
   } catch (e) {
     handleApiError(e);
   }
-
   return responseData;
 }
 

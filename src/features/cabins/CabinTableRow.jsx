@@ -1,15 +1,18 @@
 import Table from "../../ui/Table/Table";
 import CabinMenu from "./CabinMenu";
 import { formatCurrency } from "../../utils/helpers";
+import { BASE_URL } from "../../services/axios.js";
 
 function CabinTableRow({ cabin }) {
-  const { name, maxCapacity, regularPrice, discount, image } = cabin;
+  const { name, maxCapacity, regularPrice, discount, id } = cabin;
+
+  const imageSrc = BASE_URL + `cabins/${id}/cabin-image`;
 
   return (
     <>
       <Table.Cell>
         <img
-          src={image}
+          src={imageSrc}
           alt={`cabin-pic-${name}`}
           className="block aspect-[3/2] w-14 min-w-[2rem] scale-150 rounded-md object-cover object-center"
         />

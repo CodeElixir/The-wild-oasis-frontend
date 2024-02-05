@@ -25,7 +25,11 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal = () => {} }) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
     if (isEditCabin) {
       editCabin(
-        { cabinData: { ...data, image }, id: editCabinId },
+        {
+          cabinData: { ...data, image },
+          id: editCabinId,
+          imageId: editCabinValues["image"],
+        },
         {
           onSuccess: () => {
             reset();
