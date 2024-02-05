@@ -21,7 +21,13 @@ function UpdateSettingsForm() {
   const handleUpdate = (e, field) => {
     const { value } = e.target;
     if (!value) return;
-    updateSetting({ [field]: value });
+    updateSetting({
+      minBookingLength,
+      maxBookingLength,
+      maxGuestsPerBooking,
+      breakfastPrice,
+      [field]: value,
+    });
   };
 
   return (

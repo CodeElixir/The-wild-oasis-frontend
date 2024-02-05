@@ -1,70 +1,92 @@
-import supabase, { supabaseUrl } from "./supabase";
+import { handleApiError } from "./axios.js";
+import supabase, { supabaseUrl } from "./supabase.js";
 
-export async function signup({ fullName, email, password }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        fullName,
-        avatar: "",
-      },
-    },
-  });
-
-  if (error) {
-    throw new Error(error.message);
+export async function signup(
+  axiosPrivate,
+  { fullName, email, password, passwordConfirm },
+) {
+  try {
+    const { data } = await axiosPrivate.post("/users/register", {
+      email,
+      fullName,
+      password,
+      confirmPassword: passwordConfirm,
+      avatar: "",
+      role: "USER",
+    });
+    return data;
+  } catch (e) {
+    handleApiError(e);
   }
-
-  return data;
 }
 
-export async function login({ email, password }) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    throw new Error(error.message);
+export async function login(axiosPublic, { email, password }) {
+  try {
+    const { data } = await axiosPublic.post("/auth/login", {
+      email,
+      password,
+    });
+    return data;
+  } catch (e) {
+    handleApiError(e);
   }
-
-  return data;
 }
 
-export async function getCurrentUser() {
-  const { data: session } = await supabase.auth.getSession();
-  if (!session.session) return null;
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error) {
-    throw new Error(error.message);
+export async function getCurrentUser(axiosPrivate, id) {
+  try {
+    if (!id) return null;
+    const { data } = await axiosPrivate.get(`/users/${id}`);
+    return data;
+  } catch (e) {
+    handleApiError(e);
   }
-
-  return data?.user;
 }
 
-export async function updateCurrentUser({ password, fullName, avatar }) {
+export async function updateCurrentUser(
+  axiosPrivate,
+  { id, password, passwordConfirm, fullName, avatar },
+) {
   // 1. Update fullName or password(not both)
   let updateData;
   if (password) {
-    updateData = { password };
+    updateData = {
+      newPassword: password,
+      confirmationPassword: passwordConfirm,
+    };
   } else if (fullName) {
     updateData = {
-      data: { fullName },
+      fullName,
     };
   }
 
-  const { data, error } = await supabase.auth.updateUser(updateData);
-
-  if (error) {
-    throw new Error(error.message);
+  let responseData;
+  if (password) {
+    try {
+      const { data } = await axiosPrivate.post(
+        `/users/changePassword`,
+        updateData,
+      );
+      responseData = data;
+    } catch (e) {
+      handleApiError(e);
+    }
+  } else {
+    try {
+      if (!id) return null;
+      const { data } = await axiosPrivate.post(
+        `/users/update/${id}`,
+        updateData,
+      );
+      responseData = data;
+    } catch (e) {
+      handleApiError(e);
+    }
   }
 
-  if (!avatar) return data;
+  if (!avatar) return responseData;
 
   // 2. Upload avatar in avatar bucket
-  const fileName = `avatar-${data.user.id}-${Math.random()}`;
+  const fileName = `avatar-${responseData.user.id}-${Math.random()}`;
   const { error: storageError } = await supabase.storage
     .from("avatars")
     .upload(fileName, avatar);
@@ -74,22 +96,33 @@ export async function updateCurrentUser({ password, fullName, avatar }) {
   }
 
   // 3. Update avatar in user
-  const { data: updatedUser, error2 } = await supabase.auth.updateUser({
-    data: {
+  try {
+    if (!id) return null;
+    const { data } = await axiosPrivate.post(`/users/update/${id}`, {
       avatar: `${supabaseUrl}/storage/v1/object/public/avatars/${fileName}`,
-    },
-  });
-
-  if (error2) {
-    throw new Error(error.message);
+    });
+    responseData = data;
+  } catch (e) {
+    handleApiError(e);
   }
 
-  return updatedUser;
+  return responseData;
 }
 
-export async function logout() {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    throw new Error(error.message);
+export async function logout(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.post(`auth/logout`);
+    return data;
+  } catch (e) {
+    handleApiError(e);
+  }
+}
+
+export async function getCsrf(axiosPublic) {
+  try {
+    const { data } = await axiosPublic.get(`auth/csrf`);
+    return data;
+  } catch (e) {
+    handleApiError(e);
   }
 }

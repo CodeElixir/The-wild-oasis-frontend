@@ -15,9 +15,14 @@ function SignupForm() {
     defaultValues: {},
   });
 
-  const onSubmit = ({ fullName, email, password }) => {
+  const onSubmit = ({ fullName, email, password, passwordConfirm }) => {
     signup(
-      { fullName: fullName.trim(), email: email.trim(), password },
+      {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password,
+        passwordConfirm,
+      },
       { onSettled: () => reset() },
     );
   };

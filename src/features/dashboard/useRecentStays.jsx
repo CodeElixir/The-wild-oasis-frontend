@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { subDays } from "date-fns";
 import { getStaysAfterDate } from "../../services/apiBookings";
+import { useAxios } from "../../context/AxiosContext.jsx";
 
 function useRecentStays() {
+  const { axiosPrivate } = useAxios();
   const [searchParams] = useSearchParams();
 
   const numDays = !searchParams.get("last")
@@ -13,7 +15,7 @@ function useRecentStays() {
   const queryDate = subDays(new Date(), numDays).toISOString();
 
   const { isLoading, data: stays } = useQuery({
-    queryFn: () => getStaysAfterDate(queryDate),
+    queryFn: () => getStaysAfterDate(axiosPrivate, queryDate),
     queryKey: ["stays", `last-${numDays}`],
   });
 

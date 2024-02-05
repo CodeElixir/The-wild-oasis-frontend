@@ -1,14 +1,16 @@
 import supabase, { supabaseUrl } from "./supabase";
+import { handleApiError } from "./axios.js";
 
-export async function getCabins() {
-  const { data, error } = await supabase.from("cabins").select("*");
-  if (error) {
-    console.error(error);
-    throw new Error("Cabins could not be loaded.");
-  } else return data;
+export async function getCabins(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.get(`/cabins/`);
+    return data;
+  } catch (e) {
+    handleApiError(e);
+  }
 }
 
-export async function createEditCabin({ id, cabinData }) {
+export async function createEditCabin(axiosPrivate, { id, cabinData }) {
   const hasImageUrl =
     typeof cabinData.image === "string" &&
     cabinData.image?.startsWith(supabaseUrl);
@@ -25,21 +27,31 @@ export async function createEditCabin({ id, cabinData }) {
   }
 
   // 1. Create/Edit cabin
-  let query = supabase.from("cabins");
 
+  let data;
   if (id) {
     // Edit
-    query = query.update({ ...cabinData, image: imageUrl }).eq("id", id);
+    try {
+      const { data: response } = await axiosPrivate.patch(`/cabins/update`, {
+        ...cabinData,
+        id,
+        image: imageUrl,
+      });
+      data = response;
+    } catch (e) {
+      handleApiError(e);
+    }
   } else {
     // Create
-    query = query.insert([{ ...cabinData, image: imageUrl }]);
-  }
-
-  const { data, error } = await query.select().single();
-
-  if (error) {
-    console.error(error);
-    throw new Error("Cabins could not be created.");
+    try {
+      const { data: response } = await axiosPrivate.post(`/cabins/save`, {
+        ...cabinData,
+        image: imageUrl,
+      });
+      data = response;
+    } catch (e) {
+      handleApiError(e);
+    }
   }
 
   if (!hasImageUrl) {
@@ -61,10 +73,11 @@ export async function createEditCabin({ id, cabinData }) {
   return data;
 }
 
-export async function deleteCabin(id) {
-  const { error } = await supabase.from("cabins").delete().eq("id", id);
-  if (error) {
-    console.error(error);
-    throw new Error("Cabins could not be deleted.");
+export async function deleteCabin(axiosPrivate, id) {
+  try {
+    const { data } = await axiosPrivate.delete(`/cabins/delete/${id}`);
+    return data;
+  } catch (e) {
+    handleApiError(e);
   }
 }

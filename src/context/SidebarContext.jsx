@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const SidebarDialogContext = createContext();
+const SidebarDialogContext = createContext({});
 
 function SidebarDialogProvider({ children }) {
   const [open, setOpen] = useState(false);

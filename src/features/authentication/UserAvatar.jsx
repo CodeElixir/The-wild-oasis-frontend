@@ -2,7 +2,7 @@ import { useUser } from "./useUser";
 
 function UserAvatar() {
   const { user } = useUser();
-  const { fullName, avatar } = user.user_metadata;
+  const { fullName, avatar } = user;
 
   return (
     <div className="flex min-w-max items-center gap-3 text-sm font-semibold">

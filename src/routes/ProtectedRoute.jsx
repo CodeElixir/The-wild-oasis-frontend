@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../features/authentication/useUser";
 import Spinner from "../ui/Spinner/Spinner";
 
 function ProtectedRoute({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 1. Load the authenticated user
   const { isAuthenticated, isLoading } = useUser();
@@ -12,9 +13,14 @@ function ProtectedRoute({ children }) {
   // 2. If there is NO authenticated user, redirect to the /login
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      navigate("/login");
+      navigate("/login", {
+        replace: true,
+        state: {
+          from: location,
+        },
+      });
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, location, navigate]);
 
   // 3. While loading, show a spinner
   if (isLoading)

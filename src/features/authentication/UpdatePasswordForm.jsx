@@ -16,9 +16,9 @@ function UpdatePasswordForm() {
     defaultValues: {},
   });
 
-  const onSubmit = ({ password }) => {
+  const onSubmit = ({ password, passwordConfirm }) => {
     updateUser(
-      { password },
+      { password, passwordConfirm },
       {
         onSuccess: () => reset(),
       },

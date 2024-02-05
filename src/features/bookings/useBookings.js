@@ -2,8 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getBookings } from "../../services/apiBookings";
 import { PAGE_SIZE } from "../../utils/constants";
+import { useAxios } from "../../context/AxiosContext.jsx";
 
 export function useBookings() {
+  const { axiosPrivate } = useAxios();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
 
@@ -37,7 +39,7 @@ export function useBookings() {
     error,
   } = useQuery({
     queryKey: ["bookings", filter, sortBy, currentPage],
-    queryFn: () => getBookings({ filter, sortBy, currentPage }),
+    queryFn: () => getBookings(axiosPrivate, { filter, sortBy, currentPage }),
   });
 
   // Pre-fetching
@@ -47,7 +49,11 @@ export function useBookings() {
     queryClient.prefetchQuery({
       queryKey: ["bookings", filter, sortBy, currentPage + 1],
       queryFn: () =>
-        getBookings({ filter, sortBy, currentPage: currentPage + 1 }),
+        getBookings(axiosPrivate, {
+          filter,
+          sortBy,
+          currentPage: currentPage + 1,
+        }),
     });
   }
 
@@ -55,7 +61,11 @@ export function useBookings() {
     queryClient.prefetchQuery({
       queryKey: ["bookings", filter, sortBy, currentPage - 1],
       queryFn: () =>
-        getBookings({ filter, sortBy, currentPage: currentPage - 1 }),
+        getBookings(axiosPrivate, {
+          filter,
+          sortBy,
+          currentPage: currentPage - 1,
+        }),
     });
   }
 

@@ -8,10 +8,7 @@ import SpinnerMini from "../../ui/Spinner/SpinnerMini";
 
 function UpdateUserDataForm() {
   const {
-    user: {
-      email,
-      user_metadata: { fullName: currentFullName },
-    },
+    user: { id, email, fullName: currentFullName },
   } = useUser();
   const { isUpdating, updateUser } = useUpdateUser();
   const {
@@ -25,7 +22,7 @@ function UpdateUserDataForm() {
 
   const onSubmit = ({ fullName, avatar }) => {
     updateUser(
-      { fullName: fullName.trim(), avatar: avatar && avatar[0] },
+      { id, fullName: fullName.trim(), avatar: avatar && avatar[0] },
       {
         onSuccess: () =>
           reset({ email: email, fullName: fullName.trim(), avatar: null }),

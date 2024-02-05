@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
-import supabase from "../services/supabase";
 import Button from "../ui/Button/Button";
 import { subtractDates } from "../utils/helpers";
-
+import { handleApiError } from "../services/axios.js";
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
+import { useAxios } from "../context/AxiosContext.jsx";
 
 // const originalSettings = {
 //   minBookingLength: 3,
@@ -15,47 +15,84 @@ import { guests } from "./data-guests";
 //   breakfastPrice: 15,
 // };
 
-async function deleteGuests() {
-  const { error } = await supabase.from("guests").delete().gt("id", 0);
-  if (error) console.log(error.message);
+async function deleteGuests(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.delete("/guests/delete");
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
-async function deleteCabins() {
-  const { error } = await supabase.from("cabins").delete().gt("id", 0);
-  if (error) console.log(error.message);
+async function deleteCabins(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.delete("/cabins/delete");
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
-async function deleteBookings() {
-  const { error } = await supabase.from("bookings").delete().gt("id", 0);
-  if (error) console.log(error.message);
+async function deleteBookings(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.delete("/bookings/delete");
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
-async function createGuests() {
-  const { error } = await supabase.from("guests").insert(guests);
-  if (error) console.log(error.message);
+async function createGuests(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.post(`/guests/saveAll`, guests);
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
-async function createCabins() {
-  const { error } = await supabase.from("cabins").insert(cabins);
-  if (error) console.log(error.message);
+async function createCabins(axiosPrivate) {
+  try {
+    const { data } = await axiosPrivate.post(`/cabins/saveAll`, cabins);
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
-async function createBookings() {
-  // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own. So it might be different for different people, especially after multiple uploads. Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
-  const { data: guestsIds } = await supabase
-    .from("guests")
-    .select("id")
-    .order("id");
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
-  const { data: cabinsIds } = await supabase
-    .from("cabins")
-    .select("id")
-    .order("id");
-  const allCabinIds = cabinsIds.map((cabin) => cabin.id);
+async function createBookings(axiosPrivate) {
+  // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own.
+  // So it might be different for different people, especially after multiple uploads.
+  // Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
+
+  // let allCabinIds;
+  // let allGuestIds;
+  //
+  // try {
+  //   const { data } = await axiosPrivate.get(`/cabins/ids`);
+  //   allGuestIds = data;
+  // } catch (e) {
+  //   console.log(e.message);
+  //   handleApiError(e);
+  // }
+  //
+  // try {
+  //   const { data } = await axiosPrivate.get(`/cabins/ids`);
+  //   allCabinIds = data;
+  // } catch (e) {
+  //   console.log(e.message);
+  //   handleApiError(e);
+  // }
 
   const finalBookings = bookings.map((booking) => {
     // Here relying on the order of cabins, as they don't have and ID yet
     const cabin = cabins.at(booking.cabinId - 1);
+    // const guest = guests.at(booking.guestId - 1);
     const numNights = subtractDates(booking.endDate, booking.startDate);
     const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
     const extrasPrice = booking.hasBreakfast
@@ -88,32 +125,46 @@ async function createBookings() {
       cabinPrice,
       extrasPrice,
       totalPrice,
-      guestId: allGuestIds.at(booking.guestId - 1),
-      cabinId: allCabinIds.at(booking.cabinId - 1),
+      guests: {
+        id: booking.guestId,
+      },
+      cabins: {
+        id: booking.cabinId,
+      },
       status,
     };
   });
 
   console.log(finalBookings);
 
-  const { error } = await supabase.from("bookings").insert(finalBookings);
-  if (error) console.log(error.message);
+  try {
+    const { data } = await axiosPrivate.post(
+      `/bookings/saveAll`,
+      finalBookings,
+    );
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    handleApiError(e);
+  }
 }
 
 function Uploader() {
+  const { axiosPrivate } = useAxios();
+
   const [isLoading, setIsLoading] = useState(false);
 
   async function uploadAll() {
     setIsLoading(true);
     // Bookings need to be deleted FIRST
-    await deleteBookings();
-    await deleteGuests();
-    await deleteCabins();
+    await deleteBookings(axiosPrivate);
+    await deleteGuests(axiosPrivate);
+    await deleteCabins(axiosPrivate);
 
     // Bookings need to be created LAST
-    await createGuests();
-    await createCabins();
-    await createBookings();
+    await createGuests(axiosPrivate);
+    await createCabins(axiosPrivate);
+    await createBookings(axiosPrivate);
 
     setIsLoading(false);
   }
