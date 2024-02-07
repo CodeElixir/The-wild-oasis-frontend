@@ -6,7 +6,7 @@ function Logo({ className }) {
   return (
     <div className="flex justify-center">
       <img
-        src={isDarkMode ? "/logo-dark.png" : "/logo-light.png"}
+        src={isDarkMode ? "./logo-dark.png" : "./logo-light.png"}
         alt="Logo"
         className={`h-24 w-auto ${className}`}
       />
