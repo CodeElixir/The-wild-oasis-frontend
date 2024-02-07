@@ -26,7 +26,7 @@ function AppRoutes() {
   }, [getCsrf]);
 
   return (
-    <BrowserRouter basename={"/the-wild-oasis"}>
+    <BrowserRouter basename={"/the-wild-oasis/"}>
       <Routes>
         <Route element={<PersistLogin />}>
           <Route
