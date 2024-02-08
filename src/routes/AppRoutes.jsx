@@ -25,10 +25,8 @@ function AppRoutes() {
     }
   }, [getCsrf]);
 
-  const routerBase = import.meta.env.DEV ? '/' : '/the-wild-oasis/';
-
   return (
-    <BrowserRouter basename={routerBase}>
+    <BrowserRouter basename={"/the-wild-oasis/"}>
       <Routes>
         <Route element={<PersistLogin />}>
           <Route
