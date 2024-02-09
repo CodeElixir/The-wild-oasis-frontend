@@ -12,11 +12,11 @@ const classes =
   "group flex items-center gap-x-3 px-3 py-4 font-semibold text-gray-700 hover:rounded-md hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white";
 
 function MainNav() {
-  const context = useSidebarDialog();
+  const { setOpen } = useSidebarDialog();
 
   const handleMenuItemClick = () => {
-    if (context) {
-      context.setOpen(false);
+    if (setOpen) {
+      setOpen(false);
     }
   };
 
@@ -26,7 +26,7 @@ function MainNav() {
         <li>
           <NavLink
             onClick={handleMenuItemClick}
-            to="dashboard"
+            to="/dashboard"
             className={({ isActive }) => {
               return isActive
                 ? `${classes} rounded-md bg-gray-100 dark:bg-gray-800 dark:text-white`

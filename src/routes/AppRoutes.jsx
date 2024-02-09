@@ -15,6 +15,7 @@ import PageNotFound from "../pages/PageNotFound";
 import AppLayout from "../ui/AppLayout";
 import useCsrf from "../hooks/useCsrf.js";
 import PersistLogin from "../PersistLogin.jsx";
+import Home from "../pages/Home.jsx";
 
 function AppRoutes() {
   const getCsrf = useCsrf();
@@ -26,7 +27,7 @@ function AppRoutes() {
   }, [getCsrf]);
 
   return (
-    <BrowserRouter basename={"/the-wild-oasis/"}>
+    <BrowserRouter>
       <Routes>
         <Route element={<PersistLogin />}>
           <Route
@@ -36,7 +37,7 @@ function AppRoutes() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to={"dashboard"} replace />} />
+            <Route index element={<Home />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="bookings/:bookingId" element={<Booking />} />

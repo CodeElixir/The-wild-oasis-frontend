@@ -15,7 +15,9 @@ function SidebarDialogProvider({ children }) {
 function useSidebarDialog() {
   const context = useContext(SidebarDialogContext);
   if (context === undefined) {
-    return;
+    throw new Error(
+      "SidebarDialogContext was used outside of SidebarDialogProvider",
+    );
   }
   return context;
 }

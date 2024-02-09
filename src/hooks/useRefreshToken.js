@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useAxios } from "../context/AxiosContext.jsx";
 
 const useRefreshToken = () => {
   const { axiosPublic } = useAxios();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { setAuth } = useAuth();
   return async () => {
