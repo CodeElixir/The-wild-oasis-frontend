@@ -13,6 +13,7 @@ const interceptorsMap = new Map();
 let requestInterceptor;
 let responseInterceptor;
 let authToken;
+let refreshCalled = false;
 
 export const addInterceptors = (auth, refresh) => {
   authToken = auth?.accessToken;
@@ -36,11 +37,17 @@ export const addInterceptors = (auth, refresh) => {
       },
       async (error) => {
         const prevRequest = error?.config;
-        if (error?.response?.status === 403 && !prevRequest?.sent) {
+        if (
+          error?.response?.status === 403 &&
+          !prevRequest?.sent &&
+          !refreshCalled
+        ) {
           prevRequest.sent = true;
+          refreshCalled = true;
           const data = await (await refresh)();
           authToken = data.accessToken;
           prevRequest.headers["Authorization"] = `Bearer ${authToken}`;
+          refreshCalled = false;
           return axiosPrivate(prevRequest);
         }
         return Promise.reject(error);
