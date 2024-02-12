@@ -9,12 +9,14 @@ import { guests } from "./data-guests";
 import { useAxios } from "../context/AxiosContext.jsx";
 import { deleteCabin } from "../services/apiCabins.js";
 import axios from "axios";
-// const originalSettings = {
-//   minBookingLength: 3,
-//   maxBookingLength: 30,
-//   maxGuestsPerBooking: 10,
-//   breakfastPrice: 15,
-// };
+import { updateSetting } from "../services/apiSettings.js";
+
+const originalSettings = {
+  minBookingLength: 3,
+  maxBookingLength: 30,
+  maxGuestsPerBooking: 10,
+  breakfastPrice: 15,
+};
 
 async function deleteGuests(axiosPrivate) {
   try {
@@ -170,6 +172,7 @@ function Uploader() {
     await createCabins(axiosPrivate);
     await createBookings(axiosPrivate);
 
+    await updateSetting(axiosPrivate, originalSettings);
     setIsLoading(false);
   }
 
