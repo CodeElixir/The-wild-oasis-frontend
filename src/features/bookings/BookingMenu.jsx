@@ -15,7 +15,7 @@ import { useDeleteBooking } from "./useDeleteBooking";
 import Menu from "../../ui/Menu/Menu";
 import ConfirmDeletePopUp from "../../ui/Modal/ConfirmDeletePopUp";
 
-function BookingMenu({ bookingId, status }) {
+function BookingMenu({ booking, status }) {
   const navigate = useNavigate();
   const { checkout } = useCheckout();
   const { deleteBooking, isDeleting } = useDeleteBooking();
@@ -36,7 +36,7 @@ function BookingMenu({ bookingId, status }) {
                       ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
                       : ""
                   } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
-                  onClick={() => navigate(`/bookings/${bookingId}`)}
+                  onClick={() => navigate(`/bookings/${booking.id}`)}
                 >
                   {active ? (
                     <HiOutlineEye className="h-4 w-4" aria-hidden="true" />
@@ -57,7 +57,7 @@ function BookingMenu({ bookingId, status }) {
                         ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
                         : ""
                     } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
-                    onClick={() => navigate(`/checkin/${bookingId}`)}
+                    onClick={() => navigate(`/checkin/${booking.id}`)}
                   >
                     {active ? (
                       <HiOutlineArrowDownOnSquare
@@ -85,7 +85,7 @@ function BookingMenu({ bookingId, status }) {
                         ? " bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-white"
                         : ""
                     } group flex w-full items-center gap-4 rounded-md px-4 py-2 text-left text-sm`}
-                    onClick={() => checkout(bookingId)}
+                    onClick={() => checkout(booking)}
                   >
                     {active ? (
                       <HiOutlineArrowUpOnSquare
@@ -127,7 +127,7 @@ function BookingMenu({ bookingId, status }) {
                       <span>Delete booking</span>
                     </button>
                   }
-                  onConfirm={() => deleteBooking(bookingId)}
+                  onConfirm={() => deleteBooking(booking.id)}
                   disabled={isDeleting}
                 />
               )}

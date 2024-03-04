@@ -64,7 +64,7 @@ function BookingDetail() {
         )}
 
         {status === "checked-in" && (
-          <Button onClick={() => checkout(bookingId)}>
+          <Button onClick={() => checkout(booking)}>
             <div className="flex items-center gap-3">
               <HiArrowDownOnSquare className="h-5 w-5" />
               <span>Check out</span>

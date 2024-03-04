@@ -8,18 +8,19 @@ import {
 } from "../../utils/helpers";
 import BookingMenu from "./BookingMenu";
 
-function BookingTableRow({
-  booking: {
-    id: bookingId,
-    startDate,
-    endDate,
-    numNights,
-    totalPrice,
-    status,
-    guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
-  },
-}) {
+function BookingTableRow(booking) {
+  const {
+    booking: {
+      id: bookingId,
+      startDate,
+      endDate,
+      numNights,
+      totalPrice,
+      status,
+      guests: { fullName: guestName, email },
+      cabins: { name: cabinName },
+    },
+  } = booking;
   return (
     <>
       <Table.Cell className="font-[Sono] font-semibold text-gray-600">
@@ -54,7 +55,7 @@ function BookingTableRow({
         {formatCurrency(totalPrice)}
       </Table.Cell>
       <Table.Cell>
-        <BookingMenu bookingId={bookingId} status={status} />
+        <BookingMenu booking={booking.booking} status={status} />
       </Table.Cell>
     </>
   );

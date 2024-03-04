@@ -1,13 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { updateBooking } from "../../services/apiBookings";
+import { useAxios } from "../../context/AxiosContext.jsx";
 
 export function useCheckout() {
+  const { axiosPrivate } = useAxios();
   const queryClient = useQueryClient();
 
   const { mutate: checkout, isLoading: isCheckingOut } = useMutation({
-    mutationFn: (bookingId) =>
-      updateBooking(bookingId, {
+    mutationFn: (booking) =>
+      updateBooking(axiosPrivate, {
+        ...booking,
         status: "checked-out",
       }),
     onSuccess: (data) => {

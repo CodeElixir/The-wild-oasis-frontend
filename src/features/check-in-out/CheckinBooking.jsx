@@ -49,13 +49,12 @@ function CheckinBooking() {
     if (addBreakfast) {
       checkin({
         ...booking,
-        id: bookingId,
         hasBreakfast: true,
         extrasPrice: optionalBreakfastPrice,
         totalPrice: totalPrice + optionalBreakfastPrice,
       });
     } else {
-      checkin({ ...booking, id: bookingId });
+      checkin({ ...booking });
     }
   };
 

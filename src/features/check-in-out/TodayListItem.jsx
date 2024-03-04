@@ -62,7 +62,7 @@ function TodayListItem({ activity }) {
         {status === "checked-in" && (
           <Button
             size="sm"
-            onClick={() => checkout(bookingId)}
+            onClick={() => checkout(activity)}
             disabled={isCheckingOut}
             disabledStyles="!bg-indigo-500"
             className={"w-28"}
